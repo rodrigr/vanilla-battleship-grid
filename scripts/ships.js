@@ -47,6 +47,8 @@ const createShips = function(shipType, length, orientation, parent, isStatic){
         grip.classList.add('grip')
         grip.draggable = 'true'
         grip.addEventListener('dragstart', dragShip)
+        ship.addEventListener('touchmove', touchShip)
+        ship.addEventListener('touchend', touchShipEnd)
         ship.appendChild(grip)
     }
     
@@ -68,6 +70,59 @@ const createShips = function(shipType, length, orientation, parent, isStatic){
     function dragShip(ev){
         ev.dataTransfer.setData("ship", ev.target.parentNode.id)
 
+    }
+
+    //event to allow the ship beeing dragged on touch devices
+    function touchShip(ev){
+        // make the element draggable by giving it an absolute position and modifying the x and y coordinates
+        ship.classList.add("absolute");
+        
+        var touch = ev.targetTouches[0];
+        // Place element where the finger is
+        ship.style.left = touch.pageX - 25 + 'px';
+        ship.style.top = touch.pageY - 25 + 'px';
+        event.preventDefault();
+    }
+
+    function touchShipEnd(ev){
+        // hide the draggable element, or the elementFromPoint won't find what's underneath
+        ship.style.left = '-1000px';
+        ship.style.top = '-1000px';
+        // find the element on the last draggable position
+        var endTarget = document.elementFromPoint(
+            event.changedTouches[0].pageX,
+            event.changedTouches[0].pageY
+            );
+
+            
+        // position it relative again and remove the inline styles that aren't needed anymore
+        ship.classList.remove('absolute')
+        ship.style.left = '';
+        ship.style.top = '';
+        // put the draggable into it's new home
+        if (endTarget.classList.contains('grid-cell')) {
+            let y = endTarget.dataset.y.charCodeAt() - 64
+            let x = parseInt(endTarget.dataset.x)
+            if(ship.dataset.orientation == 'horizontal'){
+                if(parseInt(ship.dataset.length) + x > 11){
+                    document.querySelector("#display p").innerText = 'movement not allowed'
+                    return
+                }
+              } else{
+                if(parseInt(ship.dataset.length) + y > 11){
+                    document.querySelector("#display p").innerText = 'movement not allowed'
+                    return
+                }
+              }
+            endTarget.appendChild(ship);
+            ship.dataset.x = x
+            ship.dataset.y = String.fromCharCode(y + 64)
+
+            checkBusyCells(ship, endTarget)
+        }else{
+            document.querySelector("#display p").innerText = 'movement not allowed'
+            return
+        }
     }
 
     //event to allow the ship rotation
