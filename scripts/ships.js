@@ -108,10 +108,26 @@ const createShips = function(shipType, length, orientation, parent, isStatic){
                     document.querySelector("#display p").innerText = 'movement not allowed'
                     return
                 }
+                for(let i = 1; i < ship.dataset.length;i++){
+                    let id = (endTarget.id).match(new RegExp(`[^${endTarget.dataset.y}|^${endTarget.dataset.x}]`, 'g')).join('')
+                    let cellId = `${id}${endTarget.dataset.y}${x + i}`
+                    if(document.getElementById(cellId).className.search(/busy-cell/) != -1){
+                        document.querySelector("#display p").innerText = 'careful'
+                        return
+                    }
+                }
               } else{
                 if(parseInt(ship.dataset.length) + y > 11){
                     document.querySelector("#display p").innerText = 'movement not allowed'
                     return
+                }
+                for(let i = 1; i < ship.dataset.length;i++){
+                    let id = (endTarget.id).match(new RegExp(`[^${endTarget.dataset.y}|^${endTarget.dataset.x}]`, 'g')).join('')
+                    let cellId = `${id}${String.fromCharCode(endTarget.dataset.y.charCodeAt() + i)}${x}`
+                    if(document.getElementById(cellId).className.search(/busy-cell/) != -1){
+                        document.querySelector("#display p").innerText = 'careful'
+                        return
+                    }
                 }
               }
             endTarget.appendChild(ship);

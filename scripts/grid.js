@@ -63,8 +63,9 @@ const createGrid = function(size, element, id){
       let data = ev.dataTransfer.getData("ship");
       let ship = document.getElementById(data);
       //variables where the data of the targeted cell is stored
-      let y = ev.target.dataset.y.charCodeAt() - 64
-      let x = parseInt(ev.target.dataset.x)
+      let cell = ev.target
+      let y = cell.dataset.y.charCodeAt() - 64
+      let x = parseInt(cell.dataset.x)
 
       //Before the ship is dropped to a cell, checks if the length of the ship exceed the grid width, 
       //If true, the drop event is aborted.
@@ -73,10 +74,27 @@ const createGrid = function(size, element, id){
             document.querySelector("#display p").innerText = 'movement not allowed'
             return
         }
+        for(let i = 1; i < ship.dataset.length;i++){
+            let id = (cell.id).match(new RegExp(`[^${cell.dataset.y}|^${cell.dataset.x}]`, 'g')).join('')
+            let cellId = `${id}${cell.dataset.y}${parseInt(cell.dataset.x) + i}`
+            if(document.getElementById(cellId).className.search(/busy-cell/) != -1){
+                document.querySelector("#display p").innerText = 'careful'
+                return
+            }
+        }
       } else{
         if(parseInt(ship.dataset.length) + y > 11){
             document.querySelector("#display p").innerText = 'movement not allowed'
             return
+        }
+
+        for(let i = 1; i < ship.dataset.length;i++){
+            let id = (cell.id).match(new RegExp(`[^${cell.dataset.y}|^${cell.dataset.x}]`, 'g')).join('')
+            let cellId = `${id}${String.fromCharCode(cell.dataset.y.charCodeAt() + i)}${cell.dataset.x}`
+            if(document.getElementById(cellId).className.search(/busy-cell/) != -1){
+                document.querySelector("#display p").innerText = 'careful'
+                return
+            }
         }
       }
       //Else:
@@ -90,7 +108,7 @@ const createGrid = function(size, element, id){
       
     }
 
-    
+
 
 }
 
