@@ -23,9 +23,7 @@ const createGrid = function(size, element, id){
                 cell.dataset.y = String.fromCharCode(i - 1 + 65)
                 cell.dataset.x = j
                 cell.addEventListener('drop', function(event) {dropShip(event)})
-                //cell.addEventListener('touchmove', function(event) {dropShip(event)})
-                cell.addEventListener('dragover',function(event) {allowDrop(event)})  
-                //cell.addEventListener('touchend',function(event) {allowDrop(event)})     
+                cell.addEventListener('dragover',function(event) {allowDrop(event)})      
             }
             //if j is equal to 0, the cells belongs to the first colummn, so the letter is added as text node
             if(j===0 && i > 0){
